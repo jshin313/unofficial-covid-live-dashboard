@@ -1,0 +1,305 @@
+<html>
+    <head>
+        <!-- Import all the necessary scripts -->
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+        <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+        <title>{{ title }} - Temple Covid Cases</title>
+    </head>
+
+
+    <!-- <p class="highcharts-description"> -->
+    <!--     Chart showing stacked columns for comparing quantities. Stacked charts -->
+    <!--     are often used to visualize data that accumulates to a sum. This chart -->
+    <!--     is showing data labels for each individual section of the stack. -->
+    <!-- </p> -->
+    <style>
+#cases {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: lighter;
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    table-layout: fixed;
+    width: 80%;
+}
+
+#cases td {
+    padding: 15px;
+    text-align: center;
+    font-size: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 0;
+    background-color: #A41E35;
+    width: 100%;
+}
+
+tr.withBorder td {
+    border: 1px solid black;
+}
+
+h1 {
+    padding: 25px;
+    font-family: "Faustina", Arial;
+    color: #fff;
+}
+
+b {
+    font-size: 25px;
+    color: #e32743;
+}
+
+p {
+    text-align: center;
+    font-family: Arial;
+}
+
+html, body {
+    margin: 0;
+}
+    </style>
+</head>
+
+<header>
+    <h1>Unofficial Temple Covid Cases Dashboard</h1>
+</header>
+<body>
+
+<table id="cases">
+  <tr class="withBorder">
+    <td style="border:0">New Cases Since Last Update<br><br><b>Unknown</b></td>
+    <td>Cumulative Cases (Since 8/20)<br><br><b>Unknown</b></td>
+    <td>Estimated Active Cases<br><br><b>Unknown</b></td>
+    <td>Estimated Recovered Cases<br><br> <b>Unknown</b></td>
+    <td rowspan="2">Total Number of Tests<br><br><br><br><b>Unknown</b></td>
+  </tr>
+  <tr>
+    <td>On-Campus Students<br><br><b>Unknown</b></td>
+    <td>Off-Campus Students<br><br><b>Unknown</b></td>
+    <td>Employees<br><br><b>Unknown</b></td>
+    <td>Hospitalized<br><br><b>Unknown</b></td>
+  </tr>
+</table>
+
+    <!-- Actual graph stuff -->
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+    </figure>
+    <figure class="highcharts-figure">
+        <div id="container2"></div>
+    </figure>
+    <figure class="highcharts-figure">
+        <div id="container3"></div>
+    </figure>
+
+    <script>
+        // First chart
+        // Active Cases
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column',
+                marginTop: 100
+            },
+            title: {
+                text: 'Active Cases by Day'
+            },
+            xAxis: {
+                categories: ['8-28', '8-29', '9-1', '9-2', '9-3', '9-4', '9-1', '9-2', '9-3', '9-4']
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Active Cases'
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: ( // theme
+                            Highcharts.defaultOptions.title.style &&
+                            Highcharts.defaultOptions.title.style.color
+                        ) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                headerFormat: '<b>{point.x}</b><br/>',
+                pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true
+                    }
+                },
+            },
+            series: [{
+                name: 'Employees',
+                data: [5, 3, 4, 7, 2, 0, 1, 2, 3, 4],
+                color: '#52010A'
+            }, {
+                name: 'Off-Campus Students',
+                data: [2, 2, 3, 2, 1, 10, 20, 30, 10, 5],
+                color: '#C91920'
+            }, {
+                name: 'On-Campus Students',
+                data: [60, 30, 20, 60, 100, 200, 300, 200, 69, 72],
+                color: '#931D30'
+            }]
+        });
+
+        // Second chart
+        // Testing by Week
+        Highcharts.chart('container2', {
+            chart: {
+                type: 'column',
+                marginTop: 100
+            },
+            title: {
+                text: 'Testing by Week'
+            },
+            xAxis: {
+                categories: ['3/10/20 - 8/9/20', '8/10/20', '8/17/20', '8/24/20', '8/31/20', '9/7/20']
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '# of People Tested'
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: ( // theme
+                            Highcharts.defaultOptions.title.style &&
+                            Highcharts.defaultOptions.title.style.color
+                        ) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -30,
+                verticalAlign: 'top',
+                y: 25,
+                floating: true,
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                headerFormat: '<b>{point.x}</b><br/>',
+                pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true
+                    }
+                },
+            },
+            series: [{
+                name: 'Negative Cases',
+                data: [701 - 35, 281 - 2, 3267 - 13, 1729 - 107, 2085 - 211, 1016 - 49],
+                color: '#CCCCCC'
+            }, {
+                name: 'Positive Cases',
+                data: [35, 2, 13, 107, 211, 49],
+                color: '#931D30'
+            }]
+        });
+
+        // 3rd Chart
+        // New cases
+        Highcharts.chart('container3', {
+            title: {
+                text: 'New Cases by Day'
+            },
+
+            subtitle: {
+                text: 'Source: https://www.temple.edu/life-temple/health-wellness/covid-19-keeping-our-community-safe-healthy/university-communication/active-covid-19-cases-temple-university'
+            },
+
+            yAxis: {
+                title: {
+                    text: 'New Cases'
+                }
+            },
+
+            xAxis: {
+                categories: ['8-28', '8-29', '9-1', '9-2', '9-3', '9-4', '9-1', '9-2', '9-3', '9-4']
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+            plotOptions: {
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    },
+                }
+            },
+
+            series: [{
+                name: 'Employees',
+                data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 3000],
+                color: '#52010A'
+            }, {
+                name: 'Off-Campus',
+                data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434, 20000, 10000],
+                color: '#C91920'
+            }, {
+                name: 'On-Campus',
+                data: [11744, 17722, 16005, 19771, 20185, 24377, 32147],
+                color: '#931D30'
+            }],
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+
+        });
+    </script>
+    <footer>
+        <p>Note: This site might be behind the actual tracker so be patient.</p>
+        <p>Note 2: This site is not officially endorsed, sponsored, or affiliated by/with Temple University. All trademarks and copyrights are owned by their respective owners.</p>
+    </footer>
+
+</html>
