@@ -34,14 +34,22 @@ def scrape():
     print("Total Cases: " + str(total_cases))
 
     last_entry_date = db.session.query(DailyCase).order_by(DailyCase.id.desc()).first()
+    primary_key = 1
     try:
+        primary_key = last_entry_date.id + 1
         last_entry_date = last_entry_date.date
         print("Last Entry Date: " + last_entry_date)
     except:
         print("Empty Cases Table")
 
-    if (date != last_entry_date or last_entry_date is None):
-        new_case = DailyCase(date=date, onCampusStudents=on_campus_students, offCampusStudents=off_campus_students, nonCampusStudents=non_campus_students, employees=employees, total=total_cases)
+    if (last_entry_date is None):
+        new_case = DailyCase(id=primary_key, date=date, onCampusStudents=on_campus_students, offCampusStudents=off_campus_students, nonCampusStudents=non_campus_students, employees=employees, total=total_cases)
+        db.session.add(new_case)
+        db.session.commit()
+        print("Added New Case to database!")
+        
+    elif (date != last_entry_date):
+        new_case = DailyCase(id=primary_key, date=date, onCampusStudents=on_campus_students, offCampusStudents=off_campus_students, nonCampusStudents=non_campus_students, employees=employees, total=total_cases)
         db.session.add(new_case)
         db.session.commit()
         print("Added New Case to database!")
