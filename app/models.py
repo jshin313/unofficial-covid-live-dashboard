@@ -1,7 +1,7 @@
 from app import db
 
 class DailyCase(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.String(64), index=True, unique=True)
     onCampusStudents = db.Column(db.Integer, index=True)
     offCampusStudents = db.Column(db.Integer, index=True)
@@ -13,7 +13,7 @@ class DailyCase(db.Model):
         return '<DailyCase {}>'.format(self.date)
 
 class WeeklyTest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     timeframe = db.Column(db.String(64), index=True, unique=True)
     total_tested = db.Column(db.Integer, index=True)
     positive_cases = db.Column(db.Integer, index=True)
