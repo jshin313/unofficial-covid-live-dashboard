@@ -69,15 +69,17 @@ def scrape():
     print("Total Tested: " + str(tested))
     print("Positive: " + str(positive))
 
+    primary_key = 1
     last_time_frame = db.session.query(WeeklyTest).order_by(WeeklyTest.id.desc()).first()
     try:
+        primary_key = last_time_frame.id + 1
         last_time_frame = last_time_frame.timeframe
         print("Last time frame: " + last_time_frame)
     except:
         print("Empty Weekly Test table")
 
     if (time_frame != last_time_frame or last_time_frame is None):
-        new_week = WeeklyTest(timeframe=time_frame, total_tested=tested, positive_cases=positive)
+        new_week = WeeklyTest(id=primary_key, timeframe=time_frame, total_tested=tested, positive_cases=positive)
         db.session.add(new_week)
         db.session.commit()
         print("Added New Week of Testing to database!")
