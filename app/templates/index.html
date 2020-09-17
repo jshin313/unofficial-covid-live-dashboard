@@ -91,7 +91,7 @@ html, body {
 
     <!-- Actual graph stuff -->
     <figure class="highcharts-figure">
-        <div id="container"></div>
+        <div id="container1"></div>
     </figure>
     <figure class="highcharts-figure">
         <div id="container2"></div>
@@ -109,7 +109,7 @@ html, body {
     <script>
         // First chart
         // Active Cases
-        Highcharts.chart('container', {
+        Highcharts.chart('container1', {
             chart: {
                 type: 'column',
                 marginTop: 100
@@ -173,7 +173,8 @@ html, body {
                 color: '#931D30'
             }]
         });
-
+    </script>
+    <script>
         // 2nd Chart
         // Line graph of cases
         Highcharts.chart('container2', {
@@ -239,7 +240,8 @@ html, body {
             }
 
         });
-
+    </script>
+    <script>
         // Third chart
         // Testing by Week
         Highcharts.chart('container3', {
@@ -302,6 +304,8 @@ html, body {
                 color: '#931D30'
             }]
         });
+    </script>
+    <script>
 
         // 4th Chart
         // New cases
