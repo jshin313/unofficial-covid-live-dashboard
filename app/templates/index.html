@@ -7,7 +7,7 @@
         <script src="https://code.highcharts.com/modules/accessibility.js"></script>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
-        <title>{{ title }} - Temple Covid Cases</title>
+        <title>Temple Covid Cases</title>
     </head>
 
 
@@ -75,16 +75,16 @@ html, body {
 
 <table id="cases">
   <tr class="withBorder">
-    <td style="border:0">New Cases Since Last Update<br><br><b>Unknown</b></td>
-    <td>Cumulative Cases (Since 8/20)<br><br><b>Unknown</b></td>
-    <td>Estimated Active Cases<br><br><b>Unknown</b></td>
+      <td style="border:0">Active Cases<br><br><b>{{ total_active_cases }}</b></td>
+    <td>Cumulative Cases (Since Start of Covid Season)<br><br><b>Unknown</b></td>
+    <td>New Cases Since Last Update<br><br><b>{{ new_cases }}</b></td>
     <td>Estimated Recovered Cases<br><br> <b>Unknown</b></td>
-    <td rowspan="2">Total Number of Tests<br><br><br><br><b>Unknown</b></td>
+    <td rowspan="2">Total Number of Tests Completed<br><br><br><br><b>{{ total_tests }}</b></td>
   </tr>
   <tr>
-    <td>On-Campus Students<br><br><b>Unknown</b></td>
-    <td>Off-Campus Students<br><br><b>Unknown</b></td>
-    <td>Employees<br><br><b>Unknown</b></td>
+      <td>On-Campus Students<br><br><b>{{on_campus_students }}</b></td>
+      <td>Off-Campus Students<br><br><b>{{ off_campus_students }} </b></td>
+      <td>Employees<br><br><b>{{ employees }}</b></td>
     <td>Hospitalized<br><br><b>Unknown</b></td>
   </tr>
 </table>
@@ -96,8 +96,14 @@ html, body {
     <figure class="highcharts-figure">
         <div id="container2"></div>
     </figure>
+    
+    <p>Tip: If you want to see all the data in a table format, click on the three lines at the upper-right for each graph and click "View Data Table"</p>
+
     <figure class="highcharts-figure">
         <div id="container3"></div>
+    </figure>
+    <figure class="highcharts-figure">
+        <div id="container4"></div>
     </figure>
 
     <script>
@@ -109,10 +115,10 @@ html, body {
                 marginTop: 100
             },
             title: {
-                text: 'Active Cases by Day'
+                text: 'Active Cases by Day (Bar)'
             },
             xAxis: {
-                categories: ['8-28', '8-29', '9-1', '9-2', '9-3', '9-4', '9-1', '9-2', '9-3', '9-4']
+                categories: {{ dates_list | safe}}
             },
             yAxis: {
                 min: 0,
@@ -155,22 +161,88 @@ html, body {
             },
             series: [{
                 name: 'Employees',
-                data: [5, 3, 4, 7, 2, 0, 1, 2, 3, 4],
+                data: {{ employees_list }},
                 color: '#52010A'
             }, {
                 name: 'Off-Campus Students',
-                data: [2, 2, 3, 2, 1, 10, 20, 30, 10, 5],
+                data: {{ off_campus_students_list }},
                 color: '#C91920'
             }, {
                 name: 'On-Campus Students',
-                data: [60, 30, 20, 60, 100, 200, 300, 200, 69, 72],
+                data: {{ on_campus_students_list }},
                 color: '#931D30'
             }]
         });
 
-        // Second chart
-        // Testing by Week
+        // 2nd Chart
+        // Line graph of cases
         Highcharts.chart('container2', {
+            title: {
+                text: 'Active Cases by Day (Line)'
+            },
+
+            subtitle: {
+                text: 'Source: https://www.temple.edu/life-temple/health-wellness/covid-19-keeping-our-community-safe-healthy/university-communication/active-covid-19-cases-temple-university'
+            },
+
+            yAxis: {
+                title: {
+                    text: 'New Cases'
+                }
+            },
+
+            xAxis: {
+                categories: {{ dates_list | safe }}
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+
+            plotOptions: {
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    },
+                }
+            },
+
+            series: [{
+                name: 'Employees',
+                data: {{ employees_list }},
+                color: '#52010A'
+            }, {
+                name: 'Off-Campus',
+                data: {{ off_campus_students_list }},
+                color: '#C91920'
+            }, {
+                name: 'On-Campus',
+                data: {{ on_campus_students_list }},
+                color: '#931D30'
+            }],
+
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+
+        });
+
+        // Third chart
+        // Testing by Week
+        Highcharts.chart('container3', {
             chart: {
                 type: 'column',
                 marginTop: 100
@@ -179,7 +251,7 @@ html, body {
                 text: 'Testing by Week'
             },
             xAxis: {
-                categories: ['3/10/20 - 8/9/20', '8/10/20', '8/17/20', '8/24/20', '8/31/20', '9/7/20']
+                categories: {{ time_frame_list | safe }}
             },
             yAxis: {
                 min: 0,
@@ -222,18 +294,18 @@ html, body {
             },
             series: [{
                 name: 'Negative Cases',
-                data: [701 - 35, 281 - 2, 3267 - 13, 1729 - 107, 2085 - 211, 1016 - 49],
+                data: {{ negative_cases_list }},
                 color: '#CCCCCC'
             }, {
                 name: 'Positive Cases',
-                data: [35, 2, 13, 107, 211, 49],
+                data: {{ positive_cases_list }},
                 color: '#931D30'
             }]
         });
 
-        // 3rd Chart
+        // 4th Chart
         // New cases
-        Highcharts.chart('container3', {
+        Highcharts.chart('container4', {
             title: {
                 text: 'New Cases by Day'
             },
@@ -249,7 +321,7 @@ html, body {
             },
 
             xAxis: {
-                categories: ['8-28', '8-29', '9-1', '9-2', '9-3', '9-4', '9-1', '9-2', '9-3', '9-4']
+                categories: {{ new_cases_dates_list | safe }}
             },
 
             legend: {
@@ -267,16 +339,20 @@ html, body {
             },
 
             series: [{
+                name: 'Total New Cases',
+                data: {{ new_cases_total_list }},
+                color: '#000'
+            }, {
                 name: 'Employees',
-                data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175, 3000],
+                data: {{ new_cases_employees_list }},
                 color: '#52010A'
             }, {
                 name: 'Off-Campus',
-                data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434, 20000, 10000],
+                data: {{ new_cases_off_campus_students_list }},
                 color: '#C91920'
             }, {
                 name: 'On-Campus',
-                data: [11744, 17722, 16005, 19771, 20185, 24377, 32147],
+                data: {{ new_cases_on_campus_students_list }},
                 color: '#931D30'
             }],
 
@@ -300,6 +376,7 @@ html, body {
     <footer>
         <p>Note: This site might be behind the actual tracker so be patient.</p>
         <p>Note 2: This site is not officially endorsed, sponsored, or affiliated by/with Temple University. All trademarks and copyrights are owned by their respective owners.</p>
+        <p>Website Design &copy 2020</p>
     </footer>
 
 </html>
