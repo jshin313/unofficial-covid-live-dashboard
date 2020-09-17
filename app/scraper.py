@@ -4,6 +4,7 @@ import re
 from app import db
 from app.models import DailyCase, WeeklyTest
 
+# Returns total number of tests
 def scrape():
     url = 'https://www.temple.edu/life-temple/health-wellness/covid-19-keeping-our-community-safe-healthy/university-communication/active-covid-19-cases-temple-university'
 
@@ -22,7 +23,7 @@ def scrape():
             date = p.text.split(" ")[1].split(" ")[0].strip()
             break;
     if (date == ""):
-        print("Error retreiving date")
+        print("Error: Error retreiving date")
         return -1
 
     print("Date: " + date)
@@ -31,13 +32,13 @@ def scrape():
     print("Non Campus Students: " + str(non_campus_students))
     print("Employees: " + str(employees))
     print("Total Cases: " + str(total_cases))
-    print()
 
-    last_entry_date = db.session.query(DailyCase).order_by(DailyCase.id.desc()).first().date
+    last_entry_date = db.session.query(DailyCase).order_by(DailyCase.id.desc()).first()
     try:
+        last_entry_date = last_entry_date.date
         print("Last Entry Date: " + last_entry_date)
     except:
-        print("Empty Database")
+        print("Empty Cases Table")
 
     if (date != last_entry_date or last_entry_date is None):
         new_case = DailyCase(date=date, onCampusStudents=on_campus_students, offCampusStudents=off_campus_students, nonCampusStudents=non_campus_students, employees=employees, total=total_cases)
@@ -45,14 +46,38 @@ def scrape():
         db.session.commit()
         print("Added New Case to database!")
     else:
-        print("No new cases")
+        print("No new cases :(")
+    print()
 
     # See if there's new test data from the dashboard
-    time_frame = page.find_all('td', class_='row_1 col_0')[1].text.split('\n')[0]
-    total_tested = int(page.find_all('td', class_='row_1 col_1')[1].text.split('\n')[0])
-    positive = int(page.find_all('td', class_='row_1 col_2')[1].text.split('\n')[0])
+    table = page.find_all("table")[1]
+    last_row = table("tr")[-2]
+
+    time_frame = last_row("td")[0]("p")[0].text.split('\n')[0].replace("*", "")
+    tested = int(last_row("td")[1]("p")[0].text.split('\n')[0].replace("*", ""))
+    positive = int(last_row("td")[2]("p")[0].text.split('\n')[0].replace("*", ""))
+
     print("Time Frame: " + time_frame)
-    print("Total Tested: " + str(total_tested))
+    print("Total Tested: " + str(tested))
     print("Positive: " + str(positive))
 
-    return 0
+    last_time_frame = db.session.query(WeeklyTest).order_by(WeeklyTest.id.desc()).first()
+    try:
+        last_time_frame = last_time_frame.timeframe
+        print("Last time frame: " + last_time_frame)
+    except:
+        print("Empty Weekly Test table")
+
+    if (time_frame != last_time_frame or last_time_frame is None):
+        new_week = WeeklyTest(timeframe=time_frame, total_tested=tested, positive_cases=positive)
+        db.session.add(new_week)
+        db.session.commit()
+        print("Added New Week of Testing to database!")
+    else:
+        print("No test data added to database :(")
+
+    print("\n\n")
+
+    total_tested = int(page.find_all('td', class_='row_7 col_1')[0].text.split('\n')[0])
+    return total_tested
+
